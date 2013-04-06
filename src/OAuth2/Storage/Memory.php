@@ -11,7 +11,8 @@
 class OAuth2_Storage_Memory implements OAuth2_Storage_AuthorizationCodeInterface,
     OAuth2_Storage_UserCredentialsInterface, OAuth2_Storage_AccessTokenInterface,
     OAuth2_Storage_ClientCredentialsInterface, OAuth2_Storage_RefreshTokenInterface,
-    OAuth2_Storage_JWTBearerInterface, OAuth2_Storage_ScopeInterface
+    OAuth2_Storage_JWTBearerInterface, OAuth2_Storage_ScopeInterface,
+    OAuth2_Storage_NonceInterface
 {
     private $authorizationCodes;
     private $userCredentials;
@@ -21,6 +22,7 @@ class OAuth2_Storage_Memory implements OAuth2_Storage_AuthorizationCodeInterface
     private $jwt;
     private $supportedScopes;
     private $defaultScope;
+    private $nonces = array();
 
     public function __construct($params = array())
     {
@@ -156,6 +158,16 @@ class OAuth2_Storage_Memory implements OAuth2_Storage_AuthorizationCodeInterface
     public function getDefaultScope()
     {
         return $this->defaultScope;
+    }
+
+    public function isNonceValid($nonce)
+    {
+        return isset($this->nonces[$nonce]);
+    }
+
+    public function markNonceAsUsed($nonce)
+    {
+        $this->nonces[$nonce] = 1;
     }
 
     /*JWTBearerInterface */
