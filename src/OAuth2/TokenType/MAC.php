@@ -3,7 +3,7 @@
 /**
 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-http-mac-03
 */
-class OAuth2_TokenType_MAC implements OAuth2_TokenTypeInterface
+class OAuth2_TokenType_MAC extends OAuth2_TokenType_Bearer
 {
     private $response;
     private $config;
@@ -36,7 +36,7 @@ class OAuth2_TokenType_MAC implements OAuth2_TokenTypeInterface
 
         $tokens = explode(',', trim(str_replace($this->config['token_mac_header_name'], '', $headers)));
 
-            // In the format Key="Value"
+        // In the format Key="Value"
         foreach ($tokens as $token) {
             list($key, $value) = preg_split("/\=/", trim($token), 2);
 
