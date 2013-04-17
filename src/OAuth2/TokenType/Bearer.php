@@ -88,6 +88,11 @@ class OAuth2_TokenType_Bearer implements OAuth2_TokenTypeInterface, OAuth2_Respo
         return $request->query($this->config['token_param_name']);
     }
 
+    public function setAccessTokenParameters(array $tokenData)
+    {
+        return $tokenData;
+    }
+
     public function getResponse()
     {
         return $this->response;

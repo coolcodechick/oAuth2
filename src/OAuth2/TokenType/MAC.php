@@ -3,7 +3,7 @@
 /**
 * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-http-mac-03
 */
-class OAuth2_TokenType_MAC extends OAuth2_TokenType_Bearer
+class OAuth2_TokenType_MAC implements OAuth2_TokenTypeInterface, OAuth2_Response_ProviderInterface
 {
     private $response;
     private $config;
@@ -13,7 +13,8 @@ class OAuth2_TokenType_MAC extends OAuth2_TokenType_Bearer
     {
         $this->config = array_merge(array(
             'token_mac_header_name' => 'MAC',
-            'timestamp_valid_within' => 30,
+            'allowed_timestamp_skew' => 30,
+            'mac_algorithm' => 'hmac-sha-256',
         ), $config);
         $this->nonceStorage = $nonceStorage;
     }
@@ -54,7 +55,7 @@ class OAuth2_TokenType_MAC extends OAuth2_TokenType_Bearer
             return null;
         }
 
-        if (abs($macInfo['ts'] - time()) > $this->config['timestamp_valid_within']) {
+        if (abs($macInfo['ts'] - time()) > $this->config['allowed_timestamp_skew']) {
             $this->response = new OAuth2_Response_Error(400, 'invalid_request', 'Invalid timestamp');
             return null;
         }
@@ -63,6 +64,14 @@ class OAuth2_TokenType_MAC extends OAuth2_TokenType_Bearer
         $this->nonceStorage->markNonceAsUsed($macInfo['nonce']);
 
         return $macInfo['id'];
+    }
+
+    public function setAccessTokenParameters(array $tokenData)
+    {
+        $tokenData['kid'] = 'kid';
+        $tokenData['mac_key'] = 'macKey';
+        $tokenData['mac_algorithm'] = $this->config['mac_algorithm'];
+        return $tokenData;
     }
 
     public function getResponse()

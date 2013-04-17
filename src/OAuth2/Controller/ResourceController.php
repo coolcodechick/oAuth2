@@ -67,6 +67,8 @@ class OAuth2_Controller_ResourceController implements OAuth2_Controller_Resource
             return null;
         }
 
+        $token = $this->tokenType->setAccessTokenParameters($token);
+
         return $token;
     }
 
